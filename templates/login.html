@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Customers</title>
+
+    <!-- note the special href for files in the Flask "static" folder -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+</head>
+<body>
+    <div>
+        {{message}}
+    </div>
+    <form action="/login" method="post">
+        <label for="fname">Username:</label><br>
+        <input type="text" id="username" name="username"><br>
+        <label for="lname">Password:</label><br>
+        <input type="password" id="password" name="password" ><br><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

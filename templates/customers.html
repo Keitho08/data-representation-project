@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customers</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    
+    <script type="text/javascript">
+        function fillTable(data) {
+            var items = [];
+            $.each(data, function (key, val) {
+                items.push("<tr id='customer" + val.id + "'><td>" + val.id + "</td><td>" + val.name + "</td><td>" + val.orders + "</td><td>" + val.billed + "</td><td>" + val.location + "</td><td>" + val.weather + "</td><td><a href='#' onclick='edit(" + val.id + ")'>Edit</a></td><td><a href='#' onclick='del(" + val.id + ")'>Delete</a></td></tr>");
+            });
+
+            $('#customers > tbody').remove();
+            $("<tbody/>", {
+                html: items.join("")
+            }).appendTo("#customers");
+        }
+        function edit(id) {
+            $('#id').val($('#customer' + id + " td:nth-child(1)").text())
+            $('#name').val($('#customer' + id + " td:nth-child(2)").text())
+            $('#orders').val($('#customer' + id + " td:nth-child(3)").text())
+            $('#billed').val($('#customer' + id + " td:nth-child(4)").text())
+            $('#location').val($('#customer' + id + " td:nth-child(5)").text())
+        }
+        function update(id) {
+
+            var name = $('#name').val()
+            var orders = $('#orders').val()
+            var billed = $('#billed').val()
+            var location = $('#location').val()
+            $.ajax({
+                dataType: "json",
+                method: "PUT",
+                url: "/customers",
+                data: "id=" + id + "&name=" + name + "&billed=" + billed + "&orders=" + orders + "&location=" + location
+            }).done(function (data) {
+                fillTable(data);
+                clean()
+            });
+        }
+        function create() {
+
+            var name = $('#name').val()
+            var orders = $('#orders').val()
+            var billed = $('#billed').val()
+            var location = $('#location').val()
+            $.ajax({
+                dataType: "json",
+                method: "POST",
+                url: "/customers",
+                data: "name=" + name + "&billed=" + billed + "&orders=" + orders + "&location=" + location
+            }).done(function (data) {
+                fillTable(data);
+                clean()
+            });
+        }
+
+        function create_update() {
+            var id = $('#id').val();
+            if (id == '') {
+                create();
+            } else {
+                update(id)
+            }
+
+        }
+       
+        function getall() {
+            $.getJSON("/customers", function (data) {
+                fillTable(data);
+            });
+        }
+        function del(id) {
+
+            $.ajax({
+                dataType: "json",
+                method: "DELETE",
+                url: "/customers/" + id,
+            }).done(function (data) {
+                fillTable(data);
+            });
+        }
+        function clean() {
+            $('#id').val('')
+            $('#name').val('')
+            $('#orders').val('')
+            $('#billed').val('')
+            $('#location').val('')
+        }
+        $(function () {
+            getall();
+        });
+
+    </script>
+
+</head>
+<body>
+
+    <div id="container">
+        <p>Customers' list</p>
+        <table id="customers">
+            <thead>
+            <td>ID</td>
+            <td>Name</td>
+            <td>Orders</td>
+            <td>Billed</td>
+            <td>Location</td>
+            <td>Weather Info</td>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <p>Create / Update customer</p>
+        <div>
+            <table>
+
+                <tr><td>Id</td><td><input type="text" id="id" disabled="disabled"></td></tr>
+                <tr><td>Name</td><td><input type="text" id="name"></td></tr>
+                <tr><td>Orders</td><td><input type="text" id="orders"></td></tr>
+                <tr><td>Billed</td><td><input type="text" id="billed"></td></tr>
+                <tr><td>Location</td><td><input type="text" id="location"></td></tr>
+                <tr><td colspan="2"><input type="button" value="Clean" onclick="javascript:clean()" /><input type="button" value="Create/Update" onclick="javascript:create_update()" /></td></tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
